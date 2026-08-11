@@ -1,9 +1,9 @@
-# \[Group name\]
+# \[Group67\]
 
 **Group members:**
-- A
-- B
-- C
+- A Sander Bisgaard 
+- B Philip Otte Mikkelsen
+- C David Mathiasen 
 
 This repository contains  
 1. Inaugural project. 
