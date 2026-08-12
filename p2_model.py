@@ -106,8 +106,7 @@ class life_cycle_model:
         self.education = education
         self.income = income
         self.status = status
+        self.psi = psi
         return self
-
-
 
 
