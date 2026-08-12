@@ -21,7 +21,7 @@ class life_cycle_model:
         self.delta_e = np.array([0.010, 0.020, 0.030]) # growth of human capital
 
         # labour market: 
-        self.lam = 0.50 # job finding probability
+        self.lam = 0.60 # job finding probability
         self.sigma = 0.05   # job seperation probability
 
         # human capital: 
