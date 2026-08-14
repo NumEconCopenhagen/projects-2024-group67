@@ -1,7 +1,7 @@
 # Constructing the life cycle model: 
 import numpy as np
 
-# The life cycle model is constructed based on the framework introduced in the lecture: 
+# The life cycle model is constructed based on the framework introduced in the lectures: 
 class life_cycle_model:
     """Specifying the framework of the Life cycle income model"""
 
