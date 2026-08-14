@@ -5,7 +5,7 @@ import numpy as np
 class life_cycle_model:
     """Specifying the framework of the Life cycle income model"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # The **kwargs allows us to assign parameter values inside class later.  
         """Specifying the defualt parameters. These can be overwritten by specifying other arguments"""
 
         # Specifying the baseline structure: 
@@ -33,7 +33,7 @@ class life_cycle_model:
         self.rho = 0.60   # replacement rate
         self.floor = 0.35 # benefit floor when never employed
 
-        # overriding default settings with keyword arguments: 
+        # overriding default settings with specified keyword arguments: 
         for key, value in kwargs.items(): 
             setattr(self, key, value)
 
@@ -47,7 +47,7 @@ class life_cycle_model:
         """ Simulating the model and storing income, status and eduaction in attributes in the class"""
 
         # Education is drawn at the age of 18: 
-        education = self.rng.choice(3, size = self.N, p = self.pe)
+        education = self.rng.choice(3, size = self.N, p = self.pe) # draws each of the 3 education levels for every agent.
         years_edu = self.se[education]  # the number of years each person spends in education
         h_start = self.he0[education]   # initial levels of human capital
         growth = self.delta_e[education] # growth of human capital
