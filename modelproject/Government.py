@@ -1,3 +1,4 @@
+from math import tau
 from types import SimpleNamespace
 
 import numpy as np
@@ -127,10 +128,15 @@ class GovernmentClass(ConsumerClass):
         #    .quantities() takes the nested shares (s1,w) from the solution
         if opt is None: opt = self.solve(do_print=False)
 
-        pass
+        x1,x2,x3 = self.quantities(opt.s1,opt.w)
 
         # b. the lump-sum tax, plus the product tax on each good
-
+        R = (
+        par.T
+        + par.tau1*par.p1_pre*x1
+        + par.tau2*par.p2_pre*x2
+        + par.tau3*par.p3_pre*x3
+        )
         return R
 
     def revenue_and_utility(self,tau,goods=(2,)):
@@ -147,7 +153,25 @@ class GovernmentClass(ConsumerClass):
 
         """
 
-        pass
+        # a. set the tax rates for the selected goods
+        tau1 = tau if 1 in goods else 0.0
+        tau2 = tau if 2 in goods else 0.0
+        tau3 = tau if 3 in goods else 0.0
+
+        # b. set taxes
+        self.set_taxes(
+            T=0.0,
+            tau1=tau1,
+            tau2=tau2,
+            tau3=tau3
+    )
+
+        # c. solve the consumer problem
+        opt = self.solve(do_print=False)
+
+        # d. calculate revenue and utility
+        R = self.tax_revenue(opt)
+        u = opt.u
 
         return R,u
 
@@ -164,7 +188,20 @@ class GovernmentClass(ConsumerClass):
 
         """
 
-        pass
+        # a. set the lump-sum tax
+        self.set_taxes(
+    T=T,
+    tau1=0.0,
+    tau2=0.0,
+    tau3=0.0
+)
+
+        # b. solve the consumer problem
+        opt = self.solve(do_print=False)
+
+        # c. calculate revenue and utility
+        R = self.tax_revenue(opt)
+        u = opt.u
 
         return R,u
 
@@ -193,7 +230,20 @@ class GovernmentClass(ConsumerClass):
 
         """
 
-        pass
+        # a. create grid of tax rates
+        tau_grid = np.linspace(0.0, tau_max, N)
+
+        # b. calculate revenue for each tax rate
+        R_grid = np.empty(N)
+
+        for i, tau_i in enumerate(tau_grid):
+            R_grid[i], _ = self.revenue_and_utility(tau_i, goods=goods)
+
+        # c. find the revenue-maximizing tax rate
+        i_max = np.argmax(R_grid)
+
+        tau = tau_grid[i_max]
+        R = R_grid[i_max]
 
         return tau,R
 
@@ -219,6 +269,21 @@ class GovernmentClass(ConsumerClass):
 
         """
 
-        pass
+        # a. define the function whose root we want to find
+        def objective(tau):
+            R, _ = self.revenue_and_utility(tau, goods=goods)
+            return R - R_target
+
+        # b. find the tax rate
+        try:
+            res = optimize.root_scalar(
+                objective,
+                bracket=bracket,
+                method='brentq'
+            )
+            tau = res.root
+
+        except ValueError:
+            tau = np.nan
 
         return tau
