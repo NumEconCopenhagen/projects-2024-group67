@@ -79,7 +79,7 @@ class GovernmentClass(ConsumerClass):
 
             T (float): lump-sum tax
             tau1 (float): tax rate on food
-            tau2 (float): tax rate on bus trips
+                tau2 (float): tax rate on bus trips
             tau3 (float): tax rate on train trips
 
         """
