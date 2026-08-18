@@ -7,10 +7,10 @@ class ExtendedConsumerClass(ConsumerClass):
     def setup(self):
         """ set the baseline parameters including subsistence """
         
-        # a. inherit baseline parameters
+        # Starting with the baseline parameters:
         super().setup()
         
-        # b. add subsistence level
+        # Adding the extention of the bare minimum food requirement:
         self.par.x1_bar = 2.0 # minimum food requirement
 
     def quantities(self, s1, w):
@@ -18,13 +18,13 @@ class ExtendedConsumerClass(ConsumerClass):
         
         par = self.par
         
-        # a. compute discretionary income
+        # Computing the discretionary income:
         I_disp = par.I - (par.p1 * par.x1_bar)
         
-        # b. get shares of discretionary income
+        # extracting the shares of discretionary income
         s1_share, s2_share, s3_share = self.shares(s1, w)
         
-        # c. compute total quantities
+        # computing the total quantities
         x1 = par.x1_bar + (s1_share * I_disp) / par.p1
         x2 = (s2_share * I_disp) / par.p2
         x3 = (s3_share * I_disp) / par.p3
@@ -36,13 +36,13 @@ class ExtendedConsumerClass(ConsumerClass):
         
         par = self.par
         
-        # a. travel composite
+        # the transport nest:
         x_travel = self.ces(x2, x3, par.beta, par.sigma_B)
         
-        # b. discretionary food consumption
+        # discretionary food consumption
         x1_disp = np.maximum(x1 - par.x1_bar, par.s_min) 
         
-        # c. total utility
+        # total utility
         u = self.ces(x1_disp, x_travel, par.alpha, par.sigma_A)
         
         return u
@@ -50,8 +50,8 @@ class ExtendedConsumerClass(ConsumerClass):
     def value_of_choice(self, s1, w):
         """ utility of the bundle implied by the nested shares """
         
-        # a. compute quantities
+        # computing the quantities
         x1, x2, x3 = self.quantities(s1, w)
         
-        # b. compute and return utility
+        # computing return utility
         return self.utility(x1, x2, x3)
