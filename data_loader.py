@@ -3,7 +3,7 @@ from dstapi import DstApi
 
 
 # a. Setting up a function to load the gini coefficient for all of denmark
-def load_IFOR41(ULLIG,KOMMUNEDK,TID,varname):
+def load_IFOR41(ULLIG,KOMMUNEDK,TID):
     """ Downloads and cleans Gini coefficient data from Statistics Denmark.
     
     Args:
@@ -41,7 +41,7 @@ def load_IFOR41(ULLIG,KOMMUNEDK,TID,varname):
 
 
 # a. Setting up a function to load the top 10-pct. income share
-def load_IFOR32(DECILGEN, KOMMUNEDK, Tid, varname):
+def load_IFOR32(DECILGEN, KOMMUNEDK, TID):
 
     """ Downloads and formats income decile data from Statistics Denmark.
     
