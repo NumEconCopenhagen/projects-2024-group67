@@ -2,7 +2,7 @@ import numpy as np
 from Consumer import ConsumerClass
 
 class ExtendedConsumerClass(ConsumerClass):
-    """ consumer with Stone-Geary preferences (subsistence level for food) """
+    """ consumer with subsistence level for food """
     
     def setup(self):
         """ set the baseline parameters including subsistence """
@@ -14,7 +14,17 @@ class ExtendedConsumerClass(ConsumerClass):
         self.par.x1_bar = 2.0 # minimum food requirement
 
     def quantities(self, s1, w):
-        """ the quantities implied by the nested shares and subsistence """
+        """ calculates the quantities implied by the nested shares and subsistence 
+        
+        Args:
+            s1 (float): budget share parameter for food
+            w (float): budget share parameter for transport
+            
+        Returns:
+            x1 (float): quantity of food
+            x2 (float): quantity of bus transport
+            x3 (float): quantity of train transport 
+        """
         
         par = self.par
         
@@ -32,7 +42,16 @@ class ExtendedConsumerClass(ConsumerClass):
         return x1, x2, x3
         
     def utility(self, x1, x2, x3):
-        """ utility evaluated over discretionary consumption """
+        """ evaluates utility over discretionary consumption 
+        
+        Args:
+            x1 (float): quantity of food
+            x2 (float): quantity of bus transport
+            x3 (float): quantity of train transport
+            
+        Returns:
+            u (float): total utility    
+        """
         
         par = self.par
         
@@ -48,7 +67,15 @@ class ExtendedConsumerClass(ConsumerClass):
         return u
         
     def value_of_choice(self, s1, w):
-        """ utility of the bundle implied by the nested shares """
+        """ calculates the utility of the bundle implied by the nested shares 
+        
+        Args:
+            s1 (float): budget share parameter for food
+            w (float): budget share parameter for transport
+            
+        Returns:
+            u (float): total utility    
+        """
         
         # computing the quantities
         x1, x2, x3 = self.quantities(s1, w)
