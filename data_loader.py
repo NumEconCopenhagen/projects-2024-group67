@@ -2,6 +2,16 @@ import pandas as pd
 from dstapi import DstApi
 
 def load_IFOR41(ULLIG, KOMMUNEDK, TID):
+    """ loads and cleans Gini coefficient data from the IFOR41 table
+    
+    Args:
+        ULLIG (str): indicator for the inequality metric to query
+        KOMMUNEDK (str): indicator for the municipalities to query
+        TID (str): indicator for the time periods to query
+        
+    Returns:
+        df (pandas.DataFrame): cleaned dataframe containing Gini coefficients
+    """
     params = {
         'table': 'IFOR41', 'format': 'BULK', 'lang': 'en',
         'variables': [
@@ -18,6 +28,17 @@ def load_IFOR41(ULLIG, KOMMUNEDK, TID):
     return df
 
 def load_IFOR32(DECILGEN, KOMMUNEDK, TID):
+     """ loads data from IFOR32 and calculates the top 10 percent income share
+         
+     Args:
+        DECILGEN (str): indicator for the income deciles to query
+        KOMMUNEDK (str): indicator for the municipalities to query
+        TID (str): indicator for the time periods to query
+             
+    Returns:
+             df_final (pandas.DataFrame): dataframe with top 10 percent share by municipality and year
+    """
+     
     params = {
         'table': 'IFOR32', 'format': 'BULK', 'lang': 'en',
         'variables': [
