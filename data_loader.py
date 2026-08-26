@@ -28,7 +28,7 @@ def load_IFOR41(ULLIG, KOMMUNEDK, TID):
     return df
 
 def load_IFOR32(DECILGEN, KOMMUNEDK, TID):
-     """ loads data from IFOR32 and calculates the top 10 percent income share
+    """ loads data from IFOR32 and calculates the top 10 percent income share
          
      Args:
         DECILGEN (str): indicator for the income deciles to query
@@ -36,9 +36,8 @@ def load_IFOR32(DECILGEN, KOMMUNEDK, TID):
         TID (str): indicator for the time periods to query
              
     Returns:
-             df_final (pandas.DataFrame): dataframe with top 10 percent share by municipality and year
+        df_final (pandas.DataFrame): dataframe with top 10 percent share by municipality and year
     """
-     
     params = {
         'table': 'IFOR32', 'format': 'BULK', 'lang': 'en',
         'variables': [
