@@ -156,13 +156,45 @@ class SolowModelClass:
         return par.s_bar + (s0 - par.s_bar)*phi**t
 
 
-    # the discounted sum of log(c_t)
+    # b. the discounted sum of log(c_t)
     def welfare(self,c):
-        raise NotImplementedError
+        """ welfare of a consumption path from equation (5): W = sum_t beta**t * log(c_t)
 
+        Args:
+            c (ndarray): consumption path with par.T elements
+
+        Returns:
+            (float): discounted sum of log utility
+        """
+
+        # i. loading the parameters
+        par = self.par
+
+        # ii. the discount factors 
+        t = np.arange(par.T)
+
+        # iii. discounted sum of the log utility each period
+        return np.sum(par.beta**t * np.log(c))
 
     
 
-    # welfare of the savings rule (s0,phi)
+# welfare of the savings rule (s0,phi)
     def evaluate(self,s0,phi):
-        raise NotImplementedError
+        """ welfare of the savings rules with parameters (s0,phi)
+
+        Args:
+            s0 (float): savings rate in period 0
+            phi (float): speed of return to s_bar, in [0,1)
+
+        Returns:
+            (float): welfare W of the resulting consumption path
+        """
+
+        # i. savings path from rules
+        s = self.s_path(s0,phi)
+
+        # ii. simulate to get the consumption path
+        sim = self.simulate(s)
+
+        # iii. welfare of that path
+        return self.welfare(sim.c)
