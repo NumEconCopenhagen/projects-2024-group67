@@ -134,9 +134,27 @@ class SolowModelClass:
 
         return sim
 
-    # the savings path s_t = s_bar + (s0-s_bar)*phi**t
-    def s_path(self,s0,phi):
-        raise NotImplementedError
+    # a. Constructing the savings path
+    def s_path(self, s0, phi):
+        """ time-varying savings rate from equation 6: s_t = s_bar + (s0 - s_bar)*phi**t
+
+        Args:
+        s0 (float): savings rate in period 0
+        phi (float): speed of return to s_bar
+
+        Returns:
+        (ndarray): savings rate for each of the par.T periods
+        """
+
+        # i. loading the parameters
+        par = self.par
+
+        # ii. time index 0,1,...,T-1
+        t = np.arange(par.T)
+
+        # iii. starts at s0 and converges back to s_bar
+        return par.s_bar + (s0 - par.s_bar)*phi**t
+
 
     # the discounted sum of log(c_t)
     def welfare(self,c):
