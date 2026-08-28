@@ -160,6 +160,9 @@ class SolowModelClass:
     def welfare(self,c):
         raise NotImplementedError
 
+
+    
+
     # welfare of the savings rule (s0,phi)
     def evaluate(self,s0,phi):
         raise NotImplementedError
