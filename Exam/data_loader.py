@@ -1,28 +1,38 @@
+# Calling the fred-API and the states .py file for translating the state codes. 
 import pandas as pd
 from fredapi import Fred
+from states import STATES   
 
-def load_fred_states(fred, states, suffix):
-    """ download one FRED series per state and collect them into a wide DataFrame
-
-    Follows the FRED recipe from lecture 07_08 (02_From_API): get_series ->
-    resample to annual -> collect -> year index.
+# Constructing the data load function: 
+def load_state_data(api_key):
+    """ download real GDP and population for all 50 states from FRED
 
     Args:
-        fred (fredapi.Fred): an authenticated FRED client
-        states (list): two-letter state codes (STATES from states.py)
-        suffix (str): FRED series suffix, 'RGSP' (real GDP) or 'POP' (population)
+        api_key (str): a 32-character FRED API key
 
     Returns:
-        df (pandas.DataFrame): years in the index, state codes in the columns
+        df_gdp (pandas.DataFrame): real GDP, millions of dollars,
+            years in the index and state codes in the columns
+        df_pop (pandas.DataFrame): population, thousands of persons,
+            same shape as df_gdp
     """
-    data = {}
-    
-    for state in states:                    # a. loop over the 50 states
-        code = f'{state}{suffix}'           # b. build the FRED series name, e.g. 'ALRGSP'
-        s = fred.get_series(code)           # c. download the series
-        s = s.resample('YS').mean()         # d. enforce annual frequency (year-start)
-        data[state] = s                     # e. store with the state code as key
-    df = pd.DataFrame(data)                 # f. states -> columns, dates -> index
-    df.index = df.index.year               # g. keep the year only
-    df = df.rename_axis('year')            # h. name the index 'year'
-    return df
+
+    # a. Calling our FRED API key for validating the data extraction. 
+    fred = Fred(api_key=api_key)
+
+    # b. collecting one series for each state, where the columns are the states and the dates are used as index.
+    gdp, pop = {}, {}
+    for state in STATES: # loops through each state and extracts the data
+        gdp[state] = fred.get_series(f'{state}RGSP').resample('YS').mean()  # real GDP
+        pop[state] = fred.get_series(f'{state}POP').resample('YS').mean()   # population
+
+    # c. building the two data frames
+    df_gdp = pd.DataFrame(gdp)
+    df_pop = pd.DataFrame(pop)
+
+    # d. keeping the year and naming the index
+    for df in (df_gdp, df_pop):
+        df.index = df.index.year
+        df.index.name = 'year'
+
+    return df_gdp, df_pop
