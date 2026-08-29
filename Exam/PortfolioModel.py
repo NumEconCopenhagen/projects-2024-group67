@@ -82,12 +82,10 @@ class PortfolioModelClass:
         """ apply the no-trade band rule to the risky share
 
         Args:
-
-            theta (ndarray): pre-trade risky share at the start of a period, shape (N,)
+          theta (ndarray): pre-trade risky share at the start of a period, shape (N,)
 
         Returns:
-
-            theta_post (ndarray): risky share after trading, shape (N,)
+           theta_post (ndarray): risky share after trading, shape (N,)
             amount (ndarray): size of the change in the risky share, |theta_post-theta|
             trade_now (ndarray of bool): True where a trade actually took place
 
@@ -95,13 +93,13 @@ class PortfolioModelClass:
 
         par = self.par
 
-        # a. who is outside the no-trade band
+        # a. restrictions by the no trade band
         trade_now = np.abs(theta - par.theta_star) > par.Delta
 
-        # b. share after trading: back to the target if outside, unchanged if inside
+        # b. share after trading
         theta_post = np.where(trade_now,par.theta_star,theta)
 
-        # c. amount traded = change in the risky share (0 where no trade)
+        # c. amount traded
         amount = np.abs(theta_post - theta)
 
         return theta_post, amount, trade_now
@@ -114,48 +112,47 @@ class PortfolioModelClass:
         to reuse the same drawn returns across several rules.
 
         Args:
-
-            R (ndarray, optional): gross risky returns, shape (N,T). Drawn if None.
+        R (ndarray, optional): gross risky returns, shape (N,T). Drawn if None.
 
         """
 
         par = self.par
         sim = self.sim
 
-        # a. returns: draw if not supplied, so rules can share the same R
+        # a. draw the return if not supplied
         if R is None: R = self.draw_returns()
-        Rf = np.exp(par.r) # gross return on the safe asset (constant)
+        Rf = np.exp(par.r) 
 
-        # b. storage, shape (N,T+1) for the stocks W and theta, (N,T) for the flows
+        # b. storing the values in the array of size (N,T)
         W = np.zeros((par.N,par.T+1))
         theta = np.zeros((par.N,par.T+1))
-        traded = np.zeros((par.N,par.T),dtype=bool) # was there a trade in period t
-        dist = np.zeros((par.N,par.T)) # pre-trade distance |theta_t - theta*|
+        traded = np.zeros((par.N,par.T),dtype=bool) 
+        dist = np.zeros((par.N,par.T)) 
 
-        # c. initial conditions: start at the target with wealth W0
+        # c. specifying the initial values
         W[:,0] = par.W0
         theta[:,0] = par.theta_star
 
-        # d. loop over periods, vectorized over portfolios
+        # d. looping through the periods with the vectorized portfolio
         for t in range(par.T):
 
-            # i. pre-trade distance to the target
+            # i. initial distance to the target
             dist[:,t] = np.abs(theta[:,t] - par.theta_star)
 
-            # ii. trade decision (no-trade band)
+            # ii. trade decision 
             theta_post, amount, trade_now = self.trade(theta[:,t])
             traded[:,t] = trade_now
 
-            # iii. wealth after paying the trading cost
+            # iii. wealth after paying tau
             W_post = W[:,t]*(1 - par.tau*amount)
 
-            # iv. realize returns
+            # iv. realized returns
             W[:,t+1] = theta_post*W_post*R[:,t] + (1-theta_post)*W_post*Rf
 
-            # v. drifted risky share at the start of the next period
+            # v. risky share in the next period
             theta[:,t+1] = theta_post*W_post*R[:,t]/W[:,t+1]
 
-        # e. store results
+        # e. storing the results
         sim.R = R
         sim.W = W
         sim.theta = theta
@@ -168,8 +165,7 @@ class PortfolioModelClass:
         """ the six numbers to report for the current rule
 
         Returns:
-
-            (SimpleNamespace): n_trades, avg_dist, mean_WT, median_WT, p10_WT, EU
+        (SimpleNamespace): n_trades, avg_dist, mean_WT, median_WT, p10_WT, EU
 
         """
 
@@ -178,19 +174,19 @@ class PortfolioModelClass:
 
         res = SimpleNamespace()
 
-        # 1. average number of trades over the T periods
+        # a. average number of trades over the T periods
         res.n_trades = sim.traded.sum(axis=1).mean()
 
-        # 2. average distance to the target (pre-trade), over periods and portfolios
+        # b. average distance to the target
         res.avg_dist = sim.dist.mean()
 
-        # 3.-5. terminal-wealth statistics
+        # c. terminal wealth statistics
         WT = sim.WT
         res.mean_WT = WT.mean()
         res.median_WT = np.median(WT)
         res.p10_WT = np.percentile(WT,10)
 
-        # 6. expected utility E[u(WT)]
+        # 6. expected utility
         res.EU = self.u(WT).mean()
 
         return res
